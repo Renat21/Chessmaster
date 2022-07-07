@@ -1,1 +1,0 @@
-var board = Chessboard(document.getElementById('myBoard'),  'start')
