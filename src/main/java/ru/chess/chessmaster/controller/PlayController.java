@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Controller
 @RequestMapping
 public class PlayController {
 
     @GetMapping("/play")
-    public String playChess() {
+    public String playChess(HttpServletResponse response) {
+        response.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+        response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
         return "chessboard";
     }
 }
