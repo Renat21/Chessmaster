@@ -111,10 +111,10 @@ var load_engine = (function ()
     {
         /// Is this Node.js?
         if (typeof global !== "undefined" && Object.prototype.toString.call(global.process) === "[object process]") {
-            return spawn_worker(path || require("path").join(__dirname, "src", "stockfish.js"), options);
+            return spawn_worker(path || require("path").join(__dirname, "js", "stockfish.js"), options);
         }
         
-        path = path || "stockfish.js";
+        path = path || "/js/stockfish.js";
         
         if (typeof Worker === "function") {
             return new Worker(path);

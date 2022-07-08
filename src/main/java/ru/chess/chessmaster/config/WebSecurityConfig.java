@@ -8,7 +8,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.header.XFrameOptionsServerHttpHeadersWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -29,11 +33,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/play").not().fullyAuthenticated();
     }
 
+
+
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/**/**.css", "/**/**.jpg", "/**/**.png",
+                .antMatchers("/**/**.css", "/**/**.jpg", "/**/**/**/**.png",
                         "/**/**.svg", "/**/**.mp4", "/**/**.js", "/**/**.eot", "/**/**.woff",
                         "/**/**.woff2", "/**/**.ttf", "/**/**/**.ttf", "/error");
     }

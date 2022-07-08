@@ -17,9 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 public class PlayController {
 
     @GetMapping("/play")
-    public String playChess(HttpServletResponse response) {
-        response.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-        response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    public String playChess() {
         return "chessboard";
     }
 }
