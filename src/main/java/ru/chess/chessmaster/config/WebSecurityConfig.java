@@ -30,7 +30,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .disable()
                 .authorizeRequests()
                     //Доступ только для не зарегистрированных пользователей
-                    .antMatchers("/play").not().fullyAuthenticated();
+                .antMatchers("/register").permitAll()
+                .antMatchers("/login").permitAll()
+                .antMatchers("/index").permitAll()
+                .antMatchers("/confirm").permitAll().antMatchers("/play").not().fullyAuthenticated();
     }
 
 
