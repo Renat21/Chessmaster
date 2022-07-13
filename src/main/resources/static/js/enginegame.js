@@ -17,10 +17,10 @@ function engineGame(options) {
     // only pick up pieces for White
     var onDragStart = function(source, piece, position, orientation) {
         var re = playerColor == 'white' ? /^b/ : /^w/
-            if (game.game_over() ||
-                piece.search(re) !== -1) {
-                return false;
-            }
+        if (game.game_over() ||
+            piece.search(re) !== -1) {
+            return false;
+        }
     };
 
     setInterval(function ()
@@ -28,7 +28,7 @@ function engineGame(options) {
         if (announced_game_over) {
             return;
         }
-        
+
         if (game.game_over()) {
             announced_game_over = true;
             alert("Game Over");
@@ -37,14 +37,14 @@ function engineGame(options) {
 
     function uciCmd(cmd, which) {
         console.log("UCI: " + cmd);
-        
+
         (which || engine).postMessage(cmd);
     }
     uciCmd('uci');
-    
+
     uciCmd('setoption name Use NNUE value true', engine);
     uciCmd('setoption name Use NNUE value true', evaler);
-    
+
     ///TODO: Eval starting posistions. I suppose the starting positions could be different in different chess varients.
 
     function displayStatus() {
@@ -56,7 +56,7 @@ function engineGame(options) {
         } else {
             status += 'ready.';
         }
-        
+
         if(engineStatus.search) {
             status += '<br>' + engineStatus.search;
             if(engineStatus.score && displayScore) {
@@ -124,17 +124,17 @@ function engineGame(options) {
         time.startTime = Date.now();
         clockTick();
     }
-    
+
     function get_moves()
     {
         var moves = '';
         var history = game.history({verbose: true});
-        
+
         for(var i = 0; i < history.length; ++i) {
             var move = history[i];
             moves += ' ' + move.from + move.to + (move.promotion ? move.promotion : '');
         }
-        
+
         return moves;
     }
 
@@ -150,7 +150,7 @@ function engineGame(options) {
                 uciCmd('position startpos moves' + get_moves(), evaler);
                 evaluation_el.textContent = "";
                 uciCmd("eval", evaler);
-                
+
                 if (time && time.wtime) {
                     uciCmd("go " + (time.depth ? "depth " + time.depth : "") + " wtime " + time.wtime + " winc " + time.winc + " btime " + time.btime + " binc " + time.binc);
                 } else {
@@ -163,23 +163,23 @@ function engineGame(options) {
             }
         }
     }
-    
+
     evaler.onmessage = function(event) {
         var line;
-        
+
         if (event && typeof event === "object") {
             line = event.data;
         } else {
             line = event;
         }
-        
+
         console.log("evaler: " + line);
-        
+
         /// Ignore some output.
         if (line === "uciok" || line === "readyok" || line.substr(0, 11) === "option name") {
             return;
         }
-        
+
         if (evaluation_el.textContent) {
             evaluation_el.textContent += "\n";
         }
@@ -188,7 +188,7 @@ function engineGame(options) {
 
     engine.onmessage = function(event) {
         var line;
-        
+
         if (event && typeof event === "object") {
             line = event.data;
         } else {
@@ -209,22 +209,22 @@ function engineGame(options) {
                 uciCmd("eval", evaler)
                 evaluation_el.textContent = "";
                 //uciCmd("eval");
-            /// Is it sending feedback?
+                /// Is it sending feedback?
             } else if(match = line.match(/^info .*\bdepth (\d+) .*\bnps (\d+)/)) {
                 engineStatus.search = 'Depth: ' + match[1] + ' Nps: ' + match[2];
             }
-            
+
             /// Is it sending feed back with a score?
             if(match = line.match(/^info .*\bscore (\w+) (-?\d+)/)) {
                 var score = parseInt(match[2]) * (game.turn() == 'w' ? 1 : -1);
                 /// Is it measuring in centipawns?
                 if(match[1] == 'cp') {
                     engineStatus.score = (score / 100.0).toFixed(2);
-                /// Did it find a mate?
+                    /// Did it find a mate?
                 } else if(match[1] == 'mate') {
                     engineStatus.score = 'Mate in ' + Math.abs(score);
                 }
-                
+
                 /// Is the score bounded?
                 if(match = line.match(/\b(upper|lower)bound\b/)) {
                     engineStatus.score = ((match[1] == 'upper') == (game.turn() == 'w') ? '<= ' : '>= ') + engineStatus.score
@@ -282,16 +282,16 @@ function engineGame(options) {
             var max_err,
                 err_prob,
                 difficulty_slider;
-            
+
             if (skill < 0) {
                 skill = 0;
             }
             if (skill > 20) {
                 skill = 20;
             }
-            
+
             time.level = skill;
-            
+
             /// Change thinking depth allowance.
             if (skill < 5) {
                 time.depth = "1";
@@ -303,15 +303,15 @@ function engineGame(options) {
                 /// Let the engine decide.
                 time.depth = "";
             }
-            
+
             uciCmd('setoption name Skill Level value ' + skill);
-            
+
             ///NOTE: Stockfish level 20 does not make errors (intentially), so these numbers have no effect on level 20.
             /// Level 0 starts at 1
             err_prob = Math.round((skill * 6.35) + 1);
             /// Level 0 starts at 10
             max_err = Math.round((skill * -0.5) + 10);
-            
+
             uciCmd('setoption name Skill Level Maximum Error value ' + max_err);
             uciCmd('setoption name Skill Level Probability value ' + err_prob);
         },
